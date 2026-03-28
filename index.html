@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=500, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Pachamama">
 <title>Pachamama Culiparri</title>
@@ -247,7 +247,7 @@ button,input,textarea,select{font-family:'DM Sans',sans-serif;font-size:16px;}
 
 <script>
 var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxA4D1t3Gsi9gTQiJUFuyVvSQqwCYmkw2DTfOxGQ7iZwB6XICqFmdzdXZ7IvOYCEgzK/exec";
-var PAGE_MODE  = "<?= page ?>";
+var PAGE_MODE = (window.location.search.indexOf("page=gestion") >= 0) ? "gestion" : "catalogo";
 
 var CAT_COLORS = ["#d97706","#16a34a","#0284c7","#b45309","#c2410c","#7c3aed","#0891b2","#be123c","#65a30d","#9333ea"];
 var CAT_BGS    = ["#fffbeb","#f0fdf4","#f0f9ff","#fef9f0","#fff7ed","#faf5ff","#ecfeff","#fff1f2","#f7fee7","#faf5ff"];
@@ -268,9 +268,23 @@ var categorias=[],unidades=[];
 function apiGet(action,cb){
   fetch(SCRIPT_URL+"?action="+action).then(function(r){return r.json();}).then(cb).catch(function(){cb(null);});
 }
+
+// En GitHub Pages no podemos usar POST por CORS, usamos GET con datos en la URL
+var IS_GITHUB = window.location.hostname.indexOf("github.io") >= 0;
+
 function apiPost(body,cb){
-  fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
-    .then(function(r){return r.json();}).then(cb).catch(function(){cb&&cb(null);});
+  if(IS_GITHUB){
+    // Convertir a GET request
+    var action = body.action;
+    var url = SCRIPT_URL + "?action=" + action;
+    if(body.data)  url += "&data=" + encodeURIComponent(JSON.stringify(body.data));
+    if(body.id)    url += "&id=" + encodeURIComponent(body.id);
+    if(body.status)url += "&status=" + encodeURIComponent(body.status);
+    fetch(url).then(function(r){return r.json();}).then(cb).catch(function(){cb&&cb(null);});
+  } else {
+    fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
+      .then(function(r){return r.json();}).then(cb).catch(function(){cb&&cb(null);});
+  }
 }
 
 // ── INIT ─────────────────────────────────────────────────────────
