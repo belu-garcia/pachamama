@@ -269,22 +269,14 @@ function apiGet(action,cb){
   fetch(SCRIPT_URL+"?action="+action).then(function(r){return r.json();}).then(cb).catch(function(){cb(null);});
 }
 
-// En GitHub Pages no podemos usar POST por CORS, usamos GET con datos en la URL
-var IS_GITHUB = window.location.hostname.indexOf("github.io") >= 0;
-
 function apiPost(body,cb){
-  if(IS_GITHUB){
-    // Convertir a GET request
-    var action = body.action;
-    var url = SCRIPT_URL + "?action=" + action;
-    if(body.data)  url += "&data=" + encodeURIComponent(JSON.stringify(body.data));
-    if(body.id)    url += "&id=" + encodeURIComponent(body.id);
-    if(body.status)url += "&status=" + encodeURIComponent(body.status);
-    fetch(url).then(function(r){return r.json();}).then(cb).catch(function(){cb&&cb(null);});
-  } else {
-    fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
-      .then(function(r){return r.json();}).then(cb).catch(function(){cb&&cb(null);});
-  }
+  // no-cors: el pedido llega a Apps Script aunque no podamos leer la respuesta
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {"Content-Type":"text/plain"},
+    body: JSON.stringify(body)
+  }).then(function(){ cb&&cb({ok:true}); }).catch(function(){ cb&&cb(null); });
 }
 
 // ── INIT ─────────────────────────────────────────────────────────
