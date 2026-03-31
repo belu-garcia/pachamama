@@ -206,7 +206,7 @@ button,input,textarea,select{font-family:'DM Sans',sans-serif;font-size:16px;}
 <div id="appG" style="display:none">
   <div class="ghdr">
     <div>
-      <div class="glogo">🌿 Pachamama</div>
+      <div class="glogo">🌿 Pachamama Culiparri</div>
       <div style="font-size:11px;color:#5a8a4a">Panel de gestión</div>
     </div>
     <div style="display:flex;gap:10px;align-items:center">
@@ -358,10 +358,11 @@ function buildProds(){
 function renderCard(p){
   var m=getCatMeta(p.cat),q=cart[p.id]||0;
   var border=q>0?'border-color:'+m.color+'55;box-shadow:0 2px 12px '+m.color+'18':'';
+  var desc = p.descripcion ? '<div style="font-size:11px;color:#6a8a5a;margin-bottom:8px;line-height:1.4">'+p.descripcion+'</div>' : '';
   var ctrl=q===0
     ?'<button class="addBtn" onclick="addI('+p.id+')" style="background:'+m.bg+';color:'+m.color+';border-color:'+m.color+'44">+ Agregar</button>'
     :'<div class="qrow"><button class="qbtn" onclick="chgI('+p.id+',-1)" style="border-color:'+m.color+'44;background:'+m.bg+';color:'+m.color+'">−</button><span class="qval" style="color:'+m.color+'">'+q+'</span><button class="qbtn" onclick="chgI('+p.id+',1)" style="border-color:'+m.color+'44;background:'+m.bg+';color:'+m.color+'">+</button></div>';
-  return '<div class="pcard" id="c'+p.id+'" style="'+border+'"><div class="pname">'+p.nombre+'</div><div class="pprice">'+fmt(p.precio)+' / '+p.unidad+'</div>'+ctrl+'</div>';
+  return '<div class="pcard" id="c'+p.id+'" style="'+border+'"><div class="pname">'+p.nombre+'</div><div class="pprice">'+fmt(p.precio)+' / '+p.unidad+'</div>'+desc+ctrl+'</div>';
 }
 
 function addI(id){cart[id]=(cart[id]||0)+1;rfCard(id);updBar();}
@@ -592,6 +593,7 @@ function prodForm(p){
     +'<div><label class="lbl">Precio venta ($) *</label><input class="inp" id="pfPrecio" type="number" value="'+(p?p.precio:'')+'" placeholder="3500" style="margin-bottom:0"></div>'
     +'<div><label class="lbl">Costo ($)</label><input class="inp" id="pfCosto" type="number" value="'+(p&&p.costo?p.costo:'')+'" placeholder="0" style="margin-bottom:0"></div>'
     +'<div><label class="lbl">Unidad</label><select class="inp" id="pfUnidad" style="margin-bottom:0" onchange="handleDrop(\'pfUnidad\',\'unit\')">'+unitOpts+'</select></div>'
+    +'<div><label class="lbl">Descripción (opcional)</label><textarea class="inp" id="pfDesc" rows="2" placeholder="Ej: Lechuga, tomate, zanahoria, remolacha..." style="resize:none;margin-bottom:0">'+(p&&p.descripcion?p.descripcion:'')+'</textarea></div>'
     +'<div style="display:flex;align-items:center;gap:12px;padding-top:20px"><input type="checkbox" id="pfDisp"'+(p?p.disponible?' checked':'':" checked")+' style="width:22px;height:22px;cursor:pointer;flex-shrink:0"><label for="pfDisp" style="font-size:15px;cursor:pointer">Disponible en catálogo</label></div>'
     +'</div>'
     +'<div style="display:flex;gap:10px">'
