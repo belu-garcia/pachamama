@@ -254,31 +254,56 @@ var categorias=[],unidades=[];
 var _cbIdx=0;
 function jsonp(params,cb){
   var name="__jcb"+(++_cbIdx);
+  var myIdx=_cbIdx;
+  // Construir URL — objetos van como JSON string
   var url=SCRIPT_URL+"?callback="+name;
   Object.keys(params).forEach(function(k){
     var v=params[k];
-    url+="&"+k+"="+encodeURIComponent(typeof v==="object"?JSON.stringify(v):String(v));
+    var s=typeof v==="object"?JSON.stringify(v):String(v);
+    url+="&"+k+"="+encodeURIComponent(s);
   });
-  window[name]=function(data){
+  // Timeout de 15 segundos
+  var timer=setTimeout(function(){
     try{delete window[name];}catch(e){}
-    var el=document.getElementById("_js"+_cbIdx);
-    if(el)el.parentNode.removeChild(el);
+    var el=document.getElementById("_js"+myIdx);
+    if(el&&el.parentNode)el.parentNode.removeChild(el);
+    cb&&cb({error:"timeout"});
+  },15000);
+  window[name]=function(data){
+    clearTimeout(timer);
+    try{delete window[name];}catch(e){}
+    var el=document.getElementById("_js"+myIdx);
+    if(el&&el.parentNode)el.parentNode.removeChild(el);
     cb&&cb(data);
   };
   var s=document.createElement("script");
-  s.id="_js"+_cbIdx;
+  s.id="_js"+myIdx;
   s.src=url;
-  s.onerror=function(){try{delete window[name];}catch(e){}cb&&cb(null);};
+  s.onerror=function(){
+    clearTimeout(timer);
+    try{delete window[name];}catch(e){}
+    cb&&cb({error:"network"});
+  };
   document.head.appendChild(s);
 }
 
-function apiGet(action,cb){jsonp({action:action},cb);}
+function apiGet(action,cb){
+  jsonp({action:action},function(r){
+    if(r&&r.error){console.error("apiGet error",action,r.error);}
+    cb(r);
+  });
+}
+
 function apiPost(body,cb){
   var p={action:body.action};
-  if(body.data!==undefined)   p.data=body.data;
-  if(body.id!==undefined)     p.id=body.id;
-  if(body.status!==undefined) p.status=body.status;
-  jsonp(p,cb);
+  // Serializar data como JSON string — el servidor lo parsea con JSON.parse
+  if(body.data!==undefined)   p.data=JSON.stringify(body.data);
+  if(body.id!==undefined)     p.id=String(body.id);
+  if(body.status!==undefined) p.status=String(body.status);
+  jsonp(p,function(r){
+    if(r&&r.error){console.error("apiPost error",body.action,r.error);}
+    cb&&cb(r);
+  });
 }
 
 // ── INIT ─────────────────────────────────────────────────────────
