@@ -276,61 +276,86 @@ button,input,textarea,select{font-family:var(--font-body);font-size:16px;}
     <div id="prList"></div>
   </div>
 
-  <div id="tabCj" class="gtab-content" style="display:none;padding:10px 12px 180px">
+  <div id="tabCj" class="gtab-content" style="display:none;padding:10px 12px 20px;max-width:none">
 
-    <!-- Buscador -->
-    <input id="cajaBuscar" type="text" placeholder="Buscar producto..." oninput="filtrarCaja()"
-      style="width:100%;padding:11px 14px;border:1px solid var(--borde);border-radius:2px;font-size:15px;background:white;font-family:'DM Sans',sans-serif;color:var(--marron);margin-bottom:8px">
+  <!-- Layout: productos | carrito -->
+  <div style="display:flex;gap:12px;align-items:flex-start;max-width:1100px;margin:0 auto">
 
-    <!-- Total en tiempo real -->
-    <div id="cajaTotalHdr" style="text-align:right;font-family:'Jost',sans-serif;font-size:28px;font-weight:300;color:var(--marron);min-height:36px;margin-bottom:10px"></div>
+    <!-- ── COLUMNA PRODUCTOS (izquierda) ── -->
+    <div style="flex:1;min-width:0">
 
-    <!-- Lista productos -->
-    <div id="cajaProdList"></div>
+      <!-- Buscador -->
+      <input id="cajaBuscar" type="text" placeholder="🔍 Buscar producto..." oninput="filtrarCaja()"
+        style="width:100%;padding:11px 14px;border:1.5px solid var(--borde);border-radius:2px;font-size:15px;background:white;font-family:'DM Sans',sans-serif;color:var(--marron);margin-bottom:12px;box-sizing:border-box">
 
-    <!-- Panel inferior fijo -->
-    <div style="position:fixed;bottom:0;left:0;right:0;background:white;border-top:2px solid var(--borde);padding:10px 14px 14px;z-index:200">
-      <div style="max-width:700px;margin:0 auto">
-        <!-- Resumen items -->
-        <div id="cajaResumen" style="font-size:11px;color:var(--marron3);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Jost',sans-serif;letter-spacing:.3px"></div>
-        <!-- Nombre + nota -->
-        <div style="display:flex;gap:6px;margin-bottom:8px">
-          <input id="cajaNombre" type="text" placeholder="Nombre (opcional)"
-            style="flex:1;padding:8px 10px;border:1px solid var(--borde);border-radius:2px;font-size:13px;background:var(--crema);font-family:'DM Sans',sans-serif;color:var(--marron)">
-          <input id="cajaNotaInput" type="text" placeholder="Nota"
-            style="width:110px;padding:8px 10px;border:1px solid var(--borde);border-radius:2px;font-size:13px;background:var(--crema);font-family:'DM Sans',sans-serif;color:var(--marron)">
-        </div>
-        <!-- Pago + cobrar -->
-        <div style="display:flex;gap:6px;align-items:center">
-          <button onclick="cajaPago('efectivo')"      id="cpago_efectivo"      class="pago-btn on">Efectivo</button>
-          <button onclick="cajaPago('transferencia')" id="cpago_transferencia" class="pago-btn">Transf.</button>
-          <button onclick="cajaPago('qr')"            id="cpago_qr"            class="pago-btn">QR</button>
-          <button onclick="confirmarCaja()" id="cajaConfBtn"
-            style="flex:2;background:var(--marron);color:var(--crema);border:none;border-radius:2px;padding:11px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Jost',sans-serif;letter-spacing:1.5px;text-transform:uppercase">✓ Cobrar</button>
-          <button onclick="limpiarCaja()" title="Limpiar"
-            style="background:none;border:1px solid var(--borde);border-radius:2px;padding:11px 13px;font-size:16px;cursor:pointer;color:var(--marron2)">↺</button>
-        </div>
-      </div>
+      <!-- Cuadrantes por categoría -->
+      <div id="cajaCuadrantes"></div>
     </div>
 
-    <!-- Flash confirmación con resumen del día -->
-    <div id="cajaFlash" style="display:none;position:fixed;inset:0;background:rgba(44,26,14,.8);z-index:500;align-items:center;justify-content:center">
-      <div style="background:white;border-radius:2px;padding:28px 32px;text-align:center;max-width:320px;width:90%;max-height:90vh;overflow-y:auto">
-        <div style="font-size:32px;margin-bottom:8px">✓</div>
-        <div style="font-family:'Jost',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--marron2);margin-bottom:4px">Venta registrada</div>
-        <div id="cajaFlashTotal" style="font-family:'Jost',sans-serif;font-size:36px;font-weight:300;color:var(--marron);margin-bottom:2px"></div>
-        <div id="cajaFlashPago" style="font-size:12px;color:var(--marron3);margin-bottom:20px"></div>
-        <!-- Resumen del día -->
-        <div style="background:var(--crema);border-radius:2px;padding:14px;text-align:left;margin-bottom:20px">
-          <div style="font-family:'Jost',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--marron2);margin-bottom:10px">Resumen del día</div>
-          <div id="cajaFlashDia"></div>
+    <!-- ── COLUMNA CARRITO (derecha, sticky) ── -->
+    <div style="width:280px;flex-shrink:0;position:sticky;top:60px;align-self:flex-start">
+      <div style="background:white;border:1.5px solid var(--borde);border-radius:2px;overflow:hidden">
+
+        <!-- Header carrito -->
+        <div style="background:var(--marron);padding:12px 16px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:'Jost',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--crema)">Cuenta</span>
+          <button onclick="limpiarCaja()" style="background:none;border:none;color:var(--crema);opacity:.6;font-size:12px;cursor:pointer;font-family:'Jost',sans-serif;letter-spacing:1px">↺ Limpiar</button>
         </div>
-        <button onclick="cerrarCajaFlash()"
-          style="width:100%;background:var(--marron);color:var(--crema);border:none;border-radius:2px;padding:13px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Jost',sans-serif;letter-spacing:2px;text-transform:uppercase">Nueva venta</button>
+
+        <!-- Items del carrito -->
+        <div id="cajaCartItems" style="min-height:80px;max-height:35vh;overflow-y:auto;padding:10px 14px"></div>
+
+        <!-- Total -->
+        <div style="padding:10px 16px;border-top:1px solid var(--borde);border-bottom:1px solid var(--borde);display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:'Jost',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--marron2)">Total</span>
+          <span id="cajaTotalHdr" style="font-family:'Jost',sans-serif;font-size:24px;font-weight:300;color:var(--marron)">—</span>
+        </div>
+
+        <!-- Nombre + nota -->
+        <div style="padding:10px 14px 0">
+          <input id="cajaNombre" type="text" placeholder="Nombre (opcional)"
+            style="width:100%;padding:8px 10px;border:1px solid var(--borde);border-radius:2px;font-size:13px;background:var(--crema);font-family:'DM Sans',sans-serif;color:var(--marron);margin-bottom:6px;box-sizing:border-box">
+          <input id="cajaNotaInput" type="text" placeholder="Nota"
+            style="width:100%;padding:8px 10px;border:1px solid var(--borde);border-radius:2px;font-size:13px;background:var(--crema);font-family:'DM Sans',sans-serif;color:var(--marron);box-sizing:border-box">
+        </div>
+
+        <!-- Medio de pago -->
+        <div style="padding:10px 14px 0">
+          <div style="font-size:10px;color:var(--marron3);letter-spacing:1.5px;text-transform:uppercase;font-family:'Jost',sans-serif;margin-bottom:6px">Medio de pago</div>
+          <div style="display:flex;gap:4px">
+            <button onclick="cajaPago('efectivo')"      id="cpago_efectivo"      class="pago-btn on" style="flex:1;font-size:11px;padding:8px 4px">Efectivo</button>
+            <button onclick="cajaPago('transferencia')" id="cpago_transferencia" class="pago-btn"    style="flex:1;font-size:11px;padding:8px 4px">Transf.</button>
+            <button onclick="cajaPago('qr')"            id="cpago_qr"            class="pago-btn"    style="flex:1;font-size:11px;padding:8px 4px">QR</button>
+          </div>
+        </div>
+
+        <!-- Botón cobrar -->
+        <div style="padding:12px 14px 14px">
+          <button onclick="confirmarCaja()" id="cajaConfBtn"
+            style="width:100%;background:var(--marron);color:var(--crema);border:none;border-radius:2px;padding:14px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Jost',sans-serif;letter-spacing:2px;text-transform:uppercase">✓ Cobrar</button>
+        </div>
       </div>
     </div>
 
   </div>
+
+  <!-- Flash confirmación con resumen del día -->
+  <div id="cajaFlash" style="display:none;position:fixed;inset:0;background:rgba(44,26,14,.8);z-index:500;align-items:center;justify-content:center">
+    <div style="background:white;border-radius:2px;padding:28px 32px;text-align:center;max-width:340px;width:90%;max-height:90vh;overflow-y:auto">
+      <div style="font-size:32px;margin-bottom:8px">✓</div>
+      <div style="font-family:'Jost',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--marron2);margin-bottom:4px">Venta registrada</div>
+      <div id="cajaFlashTotal" style="font-family:'Jost',sans-serif;font-size:36px;font-weight:300;color:var(--marron);margin-bottom:2px"></div>
+      <div id="cajaFlashPago" style="font-size:12px;color:var(--marron3);margin-bottom:20px"></div>
+      <div style="background:var(--crema);border-radius:2px;padding:14px;text-align:left;margin-bottom:20px">
+        <div style="font-family:'Jost',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--marron2);margin-bottom:10px">Resumen del día</div>
+        <div id="cajaFlashDia"></div>
+      </div>
+      <button onclick="cerrarCajaFlash()"
+        style="width:100%;background:var(--marron);color:var(--crema);border:none;border-radius:2px;padding:13px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Jost',sans-serif;letter-spacing:2px;text-transform:uppercase">Nueva venta</button>
+    </div>
+  </div>
+
+</div>
 
   <div id="tabTb" class="gtab-content" style="display:none">
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;background:white;border-radius:2px;padding:12px 14px;border:1px solid var(--borde)">
@@ -941,43 +966,78 @@ function delProd(id){
 var cajaCart={}, cajaPagoActual="efectivo";
 
 function initCaja(){
-  if(products&&products.length>0){
-    renderCajaProd();
-  }else{
-    loadProducts(function(){ renderCajaProd(); });
-  }
+  if(products&&products.length>0){ renderCuadrantes(); renderCarrito(); }
+  else{ loadProducts(function(){ renderCuadrantes(); renderCarrito(); }); }
 }
 
-function filtrarCaja(){ renderCajaProd(); }
+function filtrarCaja(){
+  renderCuadrantes();
+}
 
-function renderCajaProd(){
+// Renderiza cuadrantes por categoría, orden alfabético dentro de cada una
+function renderCuadrantes(){
   var inputEl=document.getElementById("cajaBuscar");
   var q=inputEl?inputEl.value.toLowerCase().trim():"";
+
   var lista=products.filter(function(p){
     if(!p.disponible)return false;
-    if(p.stock!==null&&p.stock!==undefined&&p.stock<=0)return false;
     if(q&&p.nombre.toLowerCase().indexOf(q)<0)return false;
     return true;
+  }).sort(function(a,b){return a.nombre.localeCompare(b.nombre,"es");});
+
+  // Agrupar por categoría
+  var cats={};
+  lista.forEach(function(p){
+    if(!cats[p.cat])cats[p.cat]=[];
+    cats[p.cat].push(p);
   });
 
-  var html=lista.map(function(p){
-    var en=cajaCart[p.id]||0;
-    var stockLbl=p.stock!==null&&p.stock!==undefined
-      ?'<span style="font-size:10px;color:'+(p.stock<=5?"#d97706":"var(--marron3)")+';margin-left:6px">'+p.stock+' '+p.unidad+'</span>':'';
-    return '<div style="background:white;border:1px solid var(--borde);border-radius:2px;padding:10px 12px;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center">'
-      +'<div style="flex:1;min-width:0">'
-      +'<div style="font-weight:500;font-size:14px;color:var(--marron)">'+p.nombre+stockLbl+'</div>'
-      +'<div style="font-size:11px;color:var(--marron3)">'+fmt(p.precio)+' / '+p.unidad+'</div>'
-      +'</div>'
-      +'<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">'
-      +(en>0?'<button onclick="cajaChg('+p.id+',-1)" style="width:32px;height:32px;border-radius:2px;border:1px solid var(--borde);background:var(--crema);color:var(--marron);font-size:20px;cursor:pointer;line-height:1">−</button>':'<div style="width:32px"></div>')
-      +(en>0?'<span style="font-weight:600;font-size:17px;color:var(--marron);min-width:22px;text-align:center">'+en+'</span>':'')
-      +'<button onclick="cajaChg('+p.id+',1)" style="width:32px;height:32px;border-radius:2px;border:1px solid '+(en>0?'var(--marron)':'var(--borde)')+';background:'+(en>0?'var(--marron)':'var(--crema)')+';color:'+(en>0?'var(--crema)':'var(--marron)')+';font-size:20px;cursor:pointer;line-height:1">+</button>'
-      +'</div></div>';
-  }).join("")||'<div style="padding:32px;text-align:center;color:var(--marron3);font-size:13px">Sin resultados</div>';
+  if(!Object.keys(cats).length){
+    document.getElementById("cajaCuadrantes").innerHTML='<div style="padding:40px;text-align:center;color:var(--marron3);font-size:13px">Sin resultados</div>';
+    return;
+  }
 
-  document.getElementById("cajaProdList").innerHTML=html;
-  actualizarCajaBottom();
+  var html="";
+  Object.keys(cats).sort().forEach(function(cat){
+    var m=getCatMeta(cat);
+    var prods=cats[cat];
+    html+='<div style="margin-bottom:16px">';
+    // Header categoría
+    html+='<div style="display:flex;align-items:center;gap:8px;padding:7px 12px;background:'+m.bg+';border:1px solid '+m.color+'22;border-radius:2px 2px 0 0;border-bottom:2px solid '+m.color+'">'
+      +'<span style="font-size:16px">'+m.icon+'</span>'
+      +'<span style="font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:'+m.color+'">'+cat+'</span>'
+      +'<span style="font-size:11px;color:'+m.color+';opacity:.6;margin-left:auto">'+prods.length+' productos</span>'
+      +'</div>';
+    // Grid de productos
+    html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1px;background:'+m.color+'22;border:1px solid '+m.color+'22;border-top:none;border-radius:0 0 2px 2px;overflow:hidden">';
+    prods.forEach(function(p){
+      var en=cajaCart[p.id]||0;
+      var agotado=p.stock!==null&&p.stock!==undefined&&p.stock<=0;
+      var bg=en>0?m.bg:"white";
+      var stockLbl=p.stock!==null&&p.stock!==undefined
+        ?'<span style="font-size:9px;color:'+(p.stock<=5?"#d97706":"var(--marron3)")+';display:block;margin-top:1px">'+p.stock+' '+p.unidad+' disp.</span>':'';
+      html+='<div style="background:'+bg+';padding:10px 10px 8px;display:flex;flex-direction:column;gap:6px;'+(agotado?'opacity:.45':'')+'transition:background .1s">'
+        +'<div>'
+        +'<div style="font-weight:500;font-size:13px;color:var(--marron);line-height:1.25">'+p.nombre+'</div>'
+        +'<div style="font-size:11px;color:'+m.color+';font-family:var(--font-display)">'+fmt(p.precio)+'<span style="color:var(--marron3)"> / '+p.unidad+'</span></div>'
+        +stockLbl
+        +'</div>'
+        +(agotado
+          ?'<div style="font-size:10px;color:#dc2626;font-weight:600;letter-spacing:.5px">⊘ Agotado</div>'
+          :'<div style="display:flex;align-items:center;gap:6px">'
+          +(en>0
+            ?'<button onclick="cajaChg('+p.id+',-1)" style="width:26px;height:26px;border-radius:2px;border:1px solid var(--borde);background:white;color:var(--marron);font-size:16px;cursor:pointer;line-height:1;flex-shrink:0">−</button>'
+            +'<span style="font-weight:700;font-size:15px;color:'+m.color+';min-width:18px;text-align:center">'+en+'</span>'
+            :'')
+          +'<button onclick="cajaChg('+p.id+',1)" style="width:26px;height:26px;border-radius:2px;border:1px solid '+(en>0?m.color:'var(--borde)')+';background:'+(en>0?m.color:'white')+';color:'+(en>0?'white':'var(--marron)')+';font-size:16px;cursor:pointer;line-height:1;flex-shrink:0'+(en===0?';margin-left:auto':'')+'">+</button>'
+          +(en>0?'<span style="font-size:11px;color:var(--marron3);margin-left:auto">'+fmt(p.precio*en)+'</span>':'')
+          +'</div>')
+        +'</div>';
+    });
+    html+='</div></div>';
+  });
+
+  document.getElementById("cajaCuadrantes").innerHTML=html;
 }
 
 function cajaChg(id,d){
@@ -985,19 +1045,40 @@ function cajaChg(id,d){
   var cur=cajaCart[id]||0,next=Math.max(0,cur+d);
   if(p.stock!==null&&p.stock!==undefined&&next>p.stock)next=p.stock;
   if(next===0)delete cajaCart[id];else cajaCart[id]=next;
-  renderCajaProd();
+  renderCuadrantes();
+  renderCarrito();
 }
 
-function actualizarCajaBottom(){
+function renderCarrito(){
   var items=Object.keys(cajaCart).map(function(id){
     var p=products.find(function(x){return x.id==id;});
     return p?{p:p,q:cajaCart[id]}:null;
   }).filter(Boolean);
   var tot=items.reduce(function(s,i){return s+i.p.precio*i.q;},0);
+
+  // Total header
   var totalEl=document.getElementById("cajaTotalHdr");
-  if(totalEl)totalEl.textContent=items.length?fmt(tot):"";
-  var resEl=document.getElementById("cajaResumen");
-  if(resEl)resEl.textContent=items.length?items.map(function(i){return i.p.nombre+" x"+i.q;}).join("  ·  "):"Sin productos agregados";
+  if(totalEl)totalEl.textContent=items.length?fmt(tot):"—";
+
+  // Items
+  var cartEl=document.getElementById("cajaCartItems");
+  if(!cartEl)return;
+  if(!items.length){
+    cartEl.innerHTML='<div style="padding:12px 0;color:var(--marron3);font-size:12px;text-align:center">Sin productos</div>';
+    return;
+  }
+  cartEl.innerHTML=items.map(function(i){
+    var m=getCatMeta(i.p.cat);
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--crema2)">'
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="font-size:13px;font-weight:500;color:var(--marron);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+i.p.nombre+'</div>'
+      +'<div style="font-size:10px;color:var(--marron3)">'+i.q+' × '+fmt(i.p.precio)+'</div>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:8px">'
+      +'<span style="font-size:13px;font-weight:600;color:'+m.color+'">'+fmt(i.p.precio*i.q)+'</span>'
+      +'<button onclick="cajaChg('+i.p.id+',-1)" style="width:20px;height:20px;border-radius:2px;border:1px solid var(--borde);background:none;color:var(--marron3);font-size:13px;cursor:pointer;line-height:1;padding:0">×</button>'
+      +'</div></div>';
+  }).join("");
 }
 
 function cajaPago(tipo){
@@ -1011,9 +1092,8 @@ function cajaPago(tipo){
 function limpiarCaja(){
   cajaCart={};
   ["cajaBuscar","cajaNombre","cajaNotaInput"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});
-  cajaPagoActual="efectivo";
-  cajaPago("efectivo");
-  renderCajaProd();
+  cajaPagoActual="efectivo";cajaPago("efectivo");
+  renderCuadrantes();renderCarrito();
 }
 
 function confirmarCaja(){
@@ -1022,68 +1102,48 @@ function confirmarCaja(){
     return p?{nombre:p.nombre,cantidad:cajaCart[id],unidad:p.unidad,precio:p.precio}:null;
   }).filter(Boolean);
   if(!items.length){alert("Agregá al menos un producto.");return;}
-
   var tot=items.reduce(function(s,i){return s+i.precio*i.cantidad;},0);
   var nombreEl=document.getElementById("cajaNombre");
   var nombre=(nombreEl&&nombreEl.value.trim())?nombreEl.value.trim():"Local";
   var notaEl=document.getElementById("cajaNotaInput");
   var nota=cajaPagoActual+(notaEl&&notaEl.value.trim()?" · "+notaEl.value.trim():"");
-
-  // Efectivo y QR = entregado (ya cobrado). Transferencia = pendiente.
   var status=cajaPagoActual==="transferencia"?"pendiente":"entregado";
-
   var btn=document.getElementById("cajaConfBtn");
   if(btn){btn.textContent="Guardando...";btn.disabled=true;}
-
-  var data={
-    cliente:nombre,
-    telefono:"-",
-    items:items,
-    total:tot,
-    retiro:"local",
-    nota:nota,
-    origen:"local",
-    status:status
-  };
-
-  apiPost({action:"nuevoPedido",data:data},function(res){
-    if(btn){btn.textContent="✓ Cobrar";btn.disabled=false;}
-    if(!res || res.ok===false){
-      alert("No se pudo registrar la venta. Revisá la conexión e intentá de nuevo.");
-      return;
-    }
-    // Actualizar stock en memoria
-    items.forEach(function(item){
-      products=products.map(function(p){
-        if(p.nombre.toLowerCase()===item.nombre.toLowerCase()&&p.stock!==null&&p.stock!==undefined){
-          return Object.assign({},p,{stock:Math.max(0,p.stock-item.cantidad)});
-        }
-        return p;
+  var data={cliente:nombre,telefono:"-",items:items,total:tot,retiro:"local",nota:nota,origen:"local",status:status};
+  google.script.run
+    .withSuccessHandler(function(){
+      if(btn){btn.textContent="✓ Cobrar";btn.disabled=false;}
+      items.forEach(function(item){
+        products=products.map(function(p){
+          if(p.nombre.toLowerCase()===item.nombre.toLowerCase()&&p.stock!==null&&p.stock!==undefined){
+            return Object.assign({},p,{stock:Math.max(0,p.stock-item.cantidad)});
+          }
+          return p;
+        });
       });
-    });
-    // Mostrar flash con resumen del día
-    mostrarFlashCaja(tot,nombre);
-  });
+      mostrarFlashCaja(tot,nombre);
+    })
+    .withFailureHandler(function(e){
+      if(btn){btn.textContent="✓ Cobrar";btn.disabled=false;}
+      alert("Error: "+(e&&e.message?e.message:"Error al guardar"));
+    })
+    .nuevoPedidoClient(JSON.stringify(data));
 }
 
 function mostrarFlashCaja(tot,nombre){
   document.getElementById("cajaFlashTotal").textContent=fmt(tot);
-  document.getElementById("cajaFlashPago").textContent=
-    cajaPagoActual.charAt(0).toUpperCase()+cajaPagoActual.slice(1)
-    +(nombre!=="Local"?" · "+nombre:"");
-  // Resumen del día — calcular desde orders + venta actual
+  document.getElementById("cajaFlashPago").textContent=cajaPagoActual.charAt(0).toUpperCase()+cajaPagoActual.slice(1)+(nombre!=="Local"?" · "+nombre:"");
   apiGet("getPedidos",function(peds){
     var hoy=new Date();
     var hoyStr=("0"+hoy.getDate()).slice(-2)+"/"+("0"+(hoy.getMonth()+1)).slice(-2)+"/"+String(hoy.getFullYear()).slice(-2);
-    var deHoy=Array.isArray(peds)?peds.filter(function(p){
-      return p.fecha===hoyStr&&p.status!=="cancelado";
-    }):[];
+    var deHoy=Array.isArray(peds)?peds.filter(function(p){return p.fecha===hoyStr&&p.status!=="cancelado";}):[];
     var totalDia=deHoy.reduce(function(s,p){return s+p.total;},0);
     var localHoy=deHoy.filter(function(p){return p.retiro==="local";});
     var onlineHoy=deHoy.filter(function(p){return p.retiro!=="local";});
-    var html='<div style="font-size:13px;color:var(--marron);margin-bottom:6px"><b>Total del día: '+fmt(totalDia)+'</b></div>'
+    document.getElementById("cajaFlashDia").innerHTML=
+      '<div style="font-size:14px;color:var(--marron);margin-bottom:4px"><b>Total del día: '+fmt(totalDia)+'</b></div>'
       +'<div style="font-size:11px;color:var(--marron3)">'+localHoy.length+' venta'+(localHoy.length!==1?"s":"")+" local"+(onlineHoy.length?" · "+onlineHoy.length+" online":"")+'</div>';
-    document.getElementById("cajaFlashDia").innerHTML=html;
     document.getElementById("cajaFlash").style.display="flex";
   });
 }
